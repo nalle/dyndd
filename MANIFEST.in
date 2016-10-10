@@ -1,0 +1,3 @@
+include bin/dyndd startupscripts/dyndd README config/dyndd.conf logrotate.d/*
+recursive-include dyndd *
+

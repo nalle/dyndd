@@ -1,0 +1,38 @@
+#!/usr/bin/python
+import dyndd, ConfigParser, logging, os, sys
+from dyndd.controller import DynDDController
+
+try:
+  import setproctitle
+  setproctitle.setproctitle('dyndd')
+except:
+  pass
+
+if __name__ == "__main__":
+#	if "-v" in sys.args:
+#		print "Dynamic DNS Daemon version 1.0.0a"
+#		sys.exit(0)
+#	if "-h" in sys.args:
+#		print "There are no arguments except -v for version"
+#		sys.exit(0)
+
+	Config = ConfigParser.ConfigParser()
+	Config.read("/etc/dyndd/dyndd.conf")
+
+	if not os.path.exists(os.path.dirname(Config.get("global","ApplicationLog"))):
+		os.mkdir(os.path.dirname(Config.get("global","ApplicationLog")))
+
+	logger = logging.getLogger("DaemonLog")
+	logger.setLevel(logging.DEBUG)
+	formatter = logging.Formatter(
+		"%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+	handler = logging.FileHandler(Config.get("global","ApplicationLog"))
+	logger.addHandler(handler)
+
+	c = DynDDController()
+        try:
+               	c.main()
+
+        except Exception, e:
+                print e
+

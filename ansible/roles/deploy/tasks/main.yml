@@ -1,0 +1,39 @@
+---
+- name: Install required packages
+  action: apt 
+    pkg={{item}} 
+    state=installed
+  with_items:
+    - gcc
+    - make
+    - autoconf
+    - automake
+    - python-dev 
+    - libmysqlclient-dev 
+    - python-pip
+
+- name: Setup the Git repo
+  git: 
+    repo=https://github.com/nalle/dyndd 
+    dest={{ project_path }} 
+    accept_hostkey=yes
+
+- name: Create python package from git repo
+  shell: "python {{ project_path }}/setup.py install)" 
+
+- name: Install DynDD python module 
+  pip: 
+    name='{{ project_path }}/dist/build/dyndd-stable.tar.gz'
+
+- name: Copy configuration file
+  copy: 
+    src={{ project_path }}/config 
+    dest=/etc/dyndd 
+    force=no
+
+- name: (Re)start dyndd service 
+  service: 
+    name=dyndd
+    state=restarted 
+    enabled=yes 
+
