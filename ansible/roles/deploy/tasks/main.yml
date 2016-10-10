@@ -4,6 +4,7 @@
     pkg={{item}} 
     state=installed
   with_items:
+    - git
     - gcc
     - make
     - autoconf
@@ -11,29 +12,43 @@
     - python-dev 
     - libmysqlclient-dev 
     - python-pip
+  become: true
 
 - name: Setup the Git repo
   git: 
-    repo=https://github.com/nalle/dyndd 
+    repo=https://github.com/nalle/dyndd.git 
     dest={{ project_path }} 
     accept_hostkey=yes
 
 - name: Create python package from git repo
-  shell: "python {{ project_path }}/setup.py install)" 
+  shell: "python setup.py sdist" 
+  args: 
+    chdir: "{{ project_path }}"
 
 - name: Install DynDD python module 
   pip: 
-    name='{{ project_path }}/dist/build/dyndd-stable.tar.gz'
+    name="{{ project_path }}/dist/dyndd-{{dyndd_version}}.tar.gz"
+  become: true
+
+- name: Check if we need to install config 
+  stat: path=/etc/dyndd/dyndd.conf
+  register: install_config
+
+- name: Create configuration directory
+  file: 
+    path=/etc/dyndd
+    state=directory 
+    mode=0755
+  when: install_config.stat.exists == False
 
 - name: Copy configuration file
-  copy: 
-    src={{ project_path }}/config 
-    dest=/etc/dyndd 
-    force=no
+  shell: "cp /tmp/dyndd/config/dyndd.conf /etc/dyndd/dyndd.conf"
+  when: install_config.stat.exists == False
 
 - name: (Re)start dyndd service 
   service: 
     name=dyndd
     state=restarted 
     enabled=yes 
+  become: true
 

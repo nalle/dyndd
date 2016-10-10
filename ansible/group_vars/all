@@ -1,1 +1,2 @@
-project_path: /opt/dyndd/
+project_path: /tmp/dyndd
+dyndd_version: 0.1
