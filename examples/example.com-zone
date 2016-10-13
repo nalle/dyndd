@@ -1,5 +1,5 @@
 $TTL 3600	; 10 minutes
-@		IN SOA	ns1.example.com. hostmaster.gigabit.nu. (
+@		IN SOA	ns1.example.com. hostmaster.example.com. (
 				2015030523 ; serial
 				3600       ; refresh (1 hour)
 				7200       ; retry (2 hours)

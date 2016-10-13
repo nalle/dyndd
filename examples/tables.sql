@@ -1,6 +1,5 @@
 -- MySQL dump 10.13  Distrib 5.5.41, for debian-linux-gnu (x86_64)
 --
--- Host: db.gigabit.nu    Database: dyndd
 -- ------------------------------------------------------
 -- Server version	5.5.41-0+wheezy1
 
