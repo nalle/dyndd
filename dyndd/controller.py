@@ -57,8 +57,8 @@ class DynDDController(object):
 	def ping_mysql(self):
 		try:
 			self.cur.execute("SELECT 1")
-		except Exception:
-			logging.error("Connection to MySQL "+self.config.get('global','DBHost')+" lost, retrying")
+		except Exception, e:
+			logging.error("Connection to MySQL "+self.config.get('global','DBHost')+" lost, retrying ("+e+")")
 			self.connect_mysql()
 
 		return True
