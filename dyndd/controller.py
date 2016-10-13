@@ -49,16 +49,16 @@ class DynDDController(object):
 			self.cursor = self.db.cursor(MySQLdb.cursors.DictCursor)
 			logging.info("MySQL connection successfully established to "+self.config.get('global','DBHost'))
 		except Exception, e:
-			logging.error("Failed to establish MySQL connection to "+self.config.get('global','DBHost')+", retrying")
+			logging.error("Failed to establish MySQL connection to "+self.config.get('global','DBHost')+", retrying ("+str(e)+")")
 			self.connect_mysql()
 
 		return True
 
 	def ping_mysql(self):
 		try:
-			self.cur.execute("SELECT 1")
+			self.cursor.execute("SELECT 1")
 		except Exception, e:
-			logging.error("Connection to MySQL "+self.config.get('global','DBHost')+" lost, retrying ("+e+")")
+			logging.error("Connection to MySQL "+self.config.get('global','DBHost')+" lost, retrying ("+str(e)+")")
 			self.connect_mysql()
 
 		return True

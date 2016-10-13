@@ -14,6 +14,12 @@
     - python-pip
   become: true
 
+- name: Cleanup before we start
+  file:
+    path={{ project_path }}
+    state=absent
+  become: true
+
 - name: Setup the Git repo
   git: 
     repo=https://github.com/nalle/dyndd.git 
@@ -40,6 +46,19 @@
 - name: Copy configuration file
   shell: "cp /tmp/dyndd/config/dyndd.conf /etc/dyndd/dyndd.conf"
   when: install_config.stat.exists == False
+  become: true
+
+- name: Copy bin file
+  shell: "cp /tmp/dyndd/bin/dyndd /usr/bin/dyndd"
+  become: true
+
+- name: Copy logrotate file
+  shell: "cp /tmp/dyndd/logrotate.d/dyndd /etc/logrotate.d/dyndd"
+  become: true
+
+- name: Copy startup script
+  shell: "cp /tmp/dyndd/startupscripts/dyndd /etc/init.d/dyndd"
+  become: true
 
 - name: (Re)start dyndd service 
   service: 
