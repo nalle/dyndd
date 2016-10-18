@@ -20,16 +20,24 @@
     state=absent
   become: true
 
-- name: Setup the Git repo
-  git: 
-    repo=https://github.com/nalle/dyndd.git 
-    dest={{ project_path }} 
-    accept_hostkey=yes
+- name: Creating package
+  local_action: shell (cd ..; python setup.py sdist)
+
+- name: Create target directory
+  file:
+    path=/tmp/dyndd
+    state=directory
+    mode=0755
+
+- name: Unpack tarball
+  unarchive:
+    src="../dist/dyndd-{{dyndd_version}}.tar.gz"
+    dest="{{project_path}}"
 
 - name: Install package
   shell: "python setup.py install" 
   args: 
-    chdir: "{{ project_path }}"
+    chdir: "{{ project_path }}/dyndd-{{dyndd_version}}"
   become: true
 
 - name: Check if we need to install config 
@@ -44,20 +52,20 @@
   when: install_config.stat.exists == False
 
 - name: Copy configuration file
-  shell: "cp /tmp/dyndd/config/dyndd.conf /etc/dyndd/dyndd.conf"
+  shell: "cp /tmp/dyndd/dyndd-{{dyndd_version}}/config/dyndd.conf /etc/dyndd/dyndd-{{dyndd_version}}/dyndd.conf"
   when: install_config.stat.exists == False
   become: true
 
 - name: Copy bin file
-  shell: "cp /tmp/dyndd/bin/dyndd /usr/bin/dyndd"
+  shell: "cp /tmp/dyndd/dyndd-{{dyndd_version}}/bin/dyndd /usr/bin/dyndd"
   become: true
 
 - name: Copy logrotate file
-  shell: "cp /tmp/dyndd/logrotate.d/dyndd /etc/logrotate.d/dyndd"
+  shell: "cp /tmp/dyndd/dyndd-{{dyndd_version}}/logrotate.d/dyndd /etc/logrotate.d/dyndd"
   become: true
 
 - name: Copy startup script
-  shell: "cp /tmp/dyndd/startupscripts/dyndd /etc/init.d/dyndd"
+  shell: "cp /tmp/dyndd/dyndd-{{dyndd_version}}/startupscripts/dyndd /etc/init.d/dyndd"
   become: true
 
 - name: (Re)start dyndd service 
